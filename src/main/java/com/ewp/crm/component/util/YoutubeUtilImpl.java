@@ -1,27 +1,39 @@
-package com.ewp.youtube.live;
+package com.ewp.crm.component.util;
 
-import com.ewp.youtube.Auth;
+import com.ewp.crm.component.util.interfaces.YoutubeUtil;
+import com.ewp.crm.service.youtube.Auth;
+import com.ewp.crm.service.youtube.live.ListLiveChatMessages;
+import com.ewp.crm.service.youtube.live.SearchBroadcasts;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeScopes;
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-public class YoutubeUtil {
+
+@Component
+public class YoutubeUtilImpl implements YoutubeUtil {
+
+    private static Logger logger = LoggerFactory.getLogger(YoutubeUtilImpl.class);
 
     private static final String PROPERTIES_FILENAME = "youtube.properties";
 
-    public static void main(String[] args) {
+  //  public void handleYoutubeLiveChatMessages() {
+  public static void main(String[] args) {
         Properties properties = new Properties();
         try {
-            InputStream in = YoutubeUtil.class.getResourceAsStream("/" + PROPERTIES_FILENAME);
+            InputStream in = YoutubeUtilImpl.class.getResourceAsStream("/" + PROPERTIES_FILENAME);
             properties.load(in);
         } catch (IOException e) {
-            System.err.println("There was an error reading " + PROPERTIES_FILENAME + ": " + e.getCause()
+            logger.error("There was an error reading " + PROPERTIES_FILENAME + ": " + e.getCause()
                     + " : " + e.getMessage());
             System.exit(1);
         }
@@ -43,4 +55,5 @@ public class YoutubeUtil {
             e.printStackTrace();
         }
     }
+
 }

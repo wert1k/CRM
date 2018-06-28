@@ -12,11 +12,11 @@
  * the License.
  */
 
-package com.ewp.youtube.live;
+package com.ewp.crm.service.youtube.live;
 
+import com.ewp.crm.service.youtube.Auth;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.ewp.youtube.Auth;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeScopes;
 import com.google.api.services.youtube.model.*;

@@ -2,6 +2,7 @@ package com.ewp.crm.component;
 
 import com.ewp.crm.component.util.VKUtil;
 import com.ewp.crm.component.util.interfaces.SMSUtil;
+import com.ewp.crm.component.util.interfaces.YoutubeUtil;
 import com.ewp.crm.exceptions.parse.ParseClientException;
 import com.ewp.crm.exceptions.util.VKAccessTokenException;
 import com.ewp.crm.models.*;
@@ -38,10 +39,12 @@ public class ScheduleTasks {
 
 	private final ClientHistoryService clientHistoryService;
 
+	private final YoutubeUtil youtubeUtil;
+
 	private static Logger logger = LoggerFactory.getLogger(ScheduleTasks.class);
 
 	@Autowired
-	public ScheduleTasks(VKUtil vkUtil, ClientService clientService, StatusService statusService, SocialNetworkService socialNetworkService, SocialNetworkTypeService socialNetworkTypeService, SMSUtil smsUtil, SMSInfoService smsInfoService, SendNotificationService sendNotificationService, ClientHistoryService clientHistoryService) {
+	public ScheduleTasks(VKUtil vkUtil, ClientService clientService, StatusService statusService, SocialNetworkService socialNetworkService, SocialNetworkTypeService socialNetworkTypeService, SMSUtil smsUtil, SMSInfoService smsInfoService, SendNotificationService sendNotificationService, ClientHistoryService clientHistoryService, YoutubeUtil youtubeUtil) {
 		this.vkUtil = vkUtil;
 		this.clientService = clientService;
 		this.statusService = statusService;
@@ -51,6 +54,7 @@ public class ScheduleTasks {
 		this.smsInfoService = smsInfoService;
 		this.sendNotificationService = sendNotificationService;
 		this.clientHistoryService = clientHistoryService;
+		this.youtubeUtil = youtubeUtil;
 	}
 
 	private void addClient(Client newClient) {
@@ -142,6 +146,11 @@ public class ScheduleTasks {
 			}
 		}
 	}
+
+//	@Scheduled(fixedRate = 60_000)
+//	private void checkYoutubeBroadcasts() {
+//		youtubeUtil.handleYoutubeLiveChatMessages();
+//	}
 
 	private String determineStatusOfResponse(String status) {
 		String info;
