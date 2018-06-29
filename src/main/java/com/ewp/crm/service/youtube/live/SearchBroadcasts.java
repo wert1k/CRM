@@ -4,16 +4,17 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
+@Component
 public class SearchBroadcasts {
 
-    public static String getVideoIdByChannelId(String channelId, YouTube youtube) throws IOException {
+    public String getVideoIdByChannelId(String channelId, YouTube youtube) throws IOException {
 
         String videoId = null;
 
@@ -57,7 +58,7 @@ public class SearchBroadcasts {
         return videoId;
     }
 
-    public static List<String> getResults(SearchListResponse searchResponse)
+    private List<String> getResults(SearchListResponse searchResponse)
     {
         List<String> urls = new ArrayList<>();
 

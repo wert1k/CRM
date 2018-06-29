@@ -147,10 +147,12 @@ public class ScheduleTasks {
 		}
 	}
 
-//	@Scheduled(fixedRate = 60_000)
-//	private void checkYoutubeBroadcasts() {
-//		youtubeUtil.handleYoutubeLiveChatMessages();
-//	}
+	@Scheduled(fixedRate = 60_000)
+	private void checkYoutubeBroadcasts() {
+	    if(youtubeUtil.isLiveStreamNotInAction()) {
+            youtubeUtil.handleYoutubeLiveChatMessages();
+        }
+	}
 
 	private String determineStatusOfResponse(String status) {
 		String info;

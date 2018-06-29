@@ -138,17 +138,16 @@
 			<artifactId>google-http-client-jackson2</artifactId>
 			<version>${project.http.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client-jetty</artifactId>
 			<version>${project.oauth.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.collections</groupId>
-			<artifactId>google-collections</artifactId>
-			<version>1.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>org.mortbay.jetty</artifactId>
+					<groupId>servlet-api</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 

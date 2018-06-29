@@ -14,6 +14,8 @@
 
 package com.ewp.crm.service.youtube.live;
 
+import com.ewp.crm.models.YoutubeClient;
+import com.ewp.crm.service.interfaces.YoutubeClientService;
 import com.ewp.crm.service.youtube.Auth;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -21,6 +23,8 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeScopes;
 import com.google.api.services.youtube.model.*;
 import com.google.common.collect.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,8 +41,9 @@ import java.util.TimerTask;
  * The video URL may be found in the browser address bar, or by right-clicking a video and selecting
  * Copy video URL from the context menu.
  *
- * @author Jim Rogers
  */
+
+@Component
 public class ListLiveChatMessages {
 
     /**
@@ -53,7 +58,14 @@ public class ListLiveChatMessages {
      * Define a global instance of a Youtube object, which will be used
      * to make YouTube Data API requests.
      */
-    private static YouTube youtube;
+    private YouTube youtube;
+
+    public YoutubeClientService youtubeClientService;
+
+    @Autowired
+    public ListLiveChatMessages(YoutubeClientService youtubeClientService) {
+        this.youtubeClientService = youtubeClientService;
+    }
 
     /**
      * Lists live chat messages and SuperChat details from a live broadcast.
@@ -62,7 +74,7 @@ public class ListLiveChatMessages {
      * from the chat associated with this video. If the videoId is not specified, the signed in
      * user's current live broadcast will be used instead.
      */
-    public static void start(String videoId) {
+    public void start(String videoId) {
 
         // This OAuth 2.0 access scope allows for read-only access to the
         // authenticated user's account, but not other types of account access.
@@ -86,7 +98,7 @@ public class ListLiveChatMessages {
             }
 
             // Get live chat messages
-            listChatMessages(liveChatId, null, 10000);
+            listChatMessages(liveChatId, null, 0);
         } catch (GoogleJsonResponseException e) {
             System.err
                 .println("GoogleJsonResponseException code: " + e.getDetails().getCode() + " : "
@@ -110,12 +122,10 @@ public class ListLiveChatMessages {
      * @param nextPageToken The page token from the previous request, if any.
      * @param delayMs The delay in milliseconds before making the request.
      */
-    private static void listChatMessages(
+    private void listChatMessages(
         final String liveChatId,
         final String nextPageToken,
         long delayMs) {
-        System.out.println(
-            String.format("Getting chat messages in %1$.3f seconds...", delayMs * 0.001));
         Timer pollTimer = new Timer();
         pollTimer.schedule(
             new TimerTask() {
@@ -139,6 +149,9 @@ public class ListLiveChatMessages {
                                 snippet.getDisplayMessage(),
                                 message.getAuthorDetails(),
                                 snippet.getSuperChatDetails()));
+                            addYoutubeClientToDB(message.getAuthorDetails().getDisplayName());
+//                            YoutubeClient youtubeClient = new YoutubeClient(message.getAuthorDetails().getDisplayName());
+//                            youtubeClientService.add(youtubeClient);
                         }
 
                         // Request the next page of messages
@@ -154,6 +167,13 @@ public class ListLiveChatMessages {
             }, delayMs);
     }
 
+    private void addYoutubeClientToDB(String name) {
+        System.out.println("++++++++++++++++++++++ NAME " + name);
+        YoutubeClient youtubeClient = new YoutubeClient(name);
+        youtubeClientService.add(youtubeClient);
+        System.out.println(youtubeClient.toString());
+    }
+
     /**
      * Formats a chat message for console output.
      *
@@ -162,7 +182,7 @@ public class ListLiveChatMessages {
      * @param superChatDetails SuperChat details associated with the message.
      * @return A formatted string for console output.
      */
-    private static String buildOutput(
+    private String buildOutput(
         String message,
         LiveChatMessageAuthorDetails author,
         LiveChatSuperChatDetails superChatDetails) {
@@ -195,10 +215,11 @@ public class ListLiveChatMessages {
             output.append(": ");
             output.append(message);
         }
+
         return output.toString();
     }
 
-    static String getLiveChatId(YouTube youtube, String videoId) throws IOException {
+    String getLiveChatId(YouTube youtube, String videoId) throws IOException {
         // Get liveChatId from the video
         YouTube.Videos.List videoList = youtube.videos()
                 .list("liveStreamingDetails")

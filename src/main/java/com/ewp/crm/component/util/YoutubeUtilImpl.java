@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-
 @Component
 public class YoutubeUtilImpl implements YoutubeUtil {
 
@@ -26,8 +25,20 @@ public class YoutubeUtilImpl implements YoutubeUtil {
 
     private static final String PROPERTIES_FILENAME = "youtube.properties";
 
-  //  public void handleYoutubeLiveChatMessages() {
-  public static void main(String[] args) {
+    private boolean isLiveStreamNotInAction = true;
+
+    private final ListLiveChatMessages listLiveChatMessages;
+
+    private final SearchBroadcasts searchBroadcasts;
+
+    @Autowired
+    public YoutubeUtilImpl(ListLiveChatMessages listLiveChatMessages, SearchBroadcasts searchBroadcasts) {
+        this.listLiveChatMessages = listLiveChatMessages;
+        this.searchBroadcasts = searchBroadcasts;
+    }
+
+    public void handleYoutubeLiveChatMessages() {
+
         Properties properties = new Properties();
         try {
             InputStream in = YoutubeUtilImpl.class.getResourceAsStream("/" + PROPERTIES_FILENAME);
@@ -49,11 +60,19 @@ public class YoutubeUtilImpl implements YoutubeUtil {
                     .setApplicationName("youtube-cmdline-listchatmessages-sample").build();
 
             String channelId = properties.getProperty("youtube.channel.id");
-            String videoId = SearchBroadcasts.getVideoIdByChannelId(channelId, youtube);
-            ListLiveChatMessages.start(videoId);
+            String videoId = searchBroadcasts.getVideoIdByChannelId(channelId, youtube);
+
+            if (videoId != null) {
+                isLiveStreamNotInAction = false;
+            }
+
+            listLiveChatMessages.start(videoId);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public boolean isLiveStreamNotInAction() {
+        return isLiveStreamNotInAction;
+    }
 }
