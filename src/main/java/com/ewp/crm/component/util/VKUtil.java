@@ -38,6 +38,7 @@ public class VKUtil {
 	private String redirectUri;
 	private String scope;
 	private String applicationToken;
+    private String targetVkGroup;
 
 	private final String VK_API_METHOD_TEMPLATE = "https://api.vk.com/method/";
 
@@ -56,6 +57,7 @@ public class VKUtil {
 		display = vkConfig.getDisplay();
 		redirectUri = vkConfig.getRedirectUri();
 		scope = vkConfig.getScope();
+		targetVkGroup = vkConfig.getTargetVkGroup();
 		this.socialNetworkService = socialNetworkService;
 		this.clientHistoryService = clientHistoryService;
 		this.clientService = clientService;
@@ -247,7 +249,7 @@ public class VKUtil {
 		String uriGetClient = VK_API_METHOD_TEMPLATE + "users.search?" +
 				"q=" + fullName +
 				"&count=1" +
-				"&group_id=" + "29586609" +
+				"&group_id=" + targetVkGroup +
 				"&v=" + version +
 				"&access_token=" + applicationToken;
 

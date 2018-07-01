@@ -133,22 +133,6 @@
 			<artifactId>google-api-services-youtube</artifactId>
 			<version>${project.youtube.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.google.http-client</groupId>
-			<artifactId>google-http-client-jackson2</artifactId>
-			<version>${project.http.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.oauth-client</groupId>
-			<artifactId>google-oauth-client-jetty</artifactId>
-			<version>${project.oauth.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>org.mortbay.jetty</artifactId>
-					<groupId>servlet-api</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 	</dependencies>
 
 	<build>

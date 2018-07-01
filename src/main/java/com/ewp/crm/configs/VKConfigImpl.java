@@ -26,6 +26,8 @@ public class VKConfigImpl implements VKConfig {
 
     private String scope;
 
+    private String targetVkGroup;
+
     private static Logger logger = LoggerFactory.getLogger(VKConfigImpl.class);
 
     @Autowired
@@ -37,6 +39,7 @@ public class VKConfigImpl implements VKConfig {
         display = env.getProperty("vk.app.display");
         redirectUri = env.getProperty("vk.app.redirect_uri");
         scope = env.getProperty("vk.app.scope");
+        targetVkGroup = env.getProperty("youtube.target.vkclub.id");
 
         if (!configIsValid()) {
             logger.error("VK configs have not initialized. Check vk.properties file");
@@ -52,6 +55,7 @@ public class VKConfigImpl implements VKConfig {
 		if (display == null || display.isEmpty()) return false;
 		if (redirectUri == null || redirectUri.isEmpty()) return false;
 		if (scope == null || scope.isEmpty()) return false;
+        if (targetVkGroup == null || targetVkGroup.isEmpty()) return false;
 		return true;
 	}
 
@@ -81,5 +85,9 @@ public class VKConfigImpl implements VKConfig {
 
     public String getScope() {
         return scope;
+    }
+
+    public String getTargetVkGroup() {
+        return targetVkGroup;
     }
 }
