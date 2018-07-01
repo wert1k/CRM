@@ -1,6 +1,7 @@
 package com.ewp.crm.models;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table
@@ -13,6 +14,15 @@ public class YoutubeClient {
 
     @Column(nullable = false)
     private String fullName;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "youtube_client_youtube_client_message",
+            joinColumns = {@JoinColumn(name = "youtube_client_id", foreignKey = @ForeignKey(name = "FK_YOUTUBE_CLIENT_YOUTUBE_CLIENT_MESSAGES"))},
+            inverseJoinColumns = {@JoinColumn(name = "youtube_client_messages_id", foreignKey = @ForeignKey(name = "FK_YOUTUBE_CLIENT_MESSAGES"))})
+    private List<YoutubeClientMessage> messages;
+
+    public YoutubeClient() {
+    }
 
     public YoutubeClient(String fullName) {
         this.fullName = fullName;
@@ -32,6 +42,14 @@ public class YoutubeClient {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public List<YoutubeClientMessage> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<YoutubeClientMessage> messages) {
+        this.messages = messages;
     }
 
     @Override

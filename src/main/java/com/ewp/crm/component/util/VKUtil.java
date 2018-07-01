@@ -242,6 +242,45 @@ public class VKUtil {
 		return Optional.empty();
 	}
 
+	public Optional<Client> getClientFromYoutubeLiveStreamByName(String name) {
+		String fullName = name.replaceAll("\\W+", "%20");
+		String uriGetClient = VK_API_METHOD_TEMPLATE + "users.search?" +
+				"q=" + fullName +
+				"&count=1" +
+				"&group_id=" + "29586609" +
+				"&v=" + version +
+				"&access_token=" + applicationToken;
+
+		HttpGet httpGetClient = new HttpGet(uriGetClient);
+		HttpClient httpClient = HttpClients.custom()
+				.setDefaultRequestConfig(RequestConfig.custom()
+						.setCookieSpec(CookieSpecs.STANDARD).build())
+				.build();
+		try {
+			HttpResponse response = httpClient.execute(httpGetClient);
+			String result = EntityUtils.toString(response.getEntity());
+			JSONObject json = new JSONObject(result);
+			JSONObject responseObject = json.getJSONObject("response");
+			JSONArray jsonUsers = responseObject.getJSONArray("items");
+			JSONObject jsonUser = jsonUsers.getJSONObject(0);
+			long id = jsonUser.getLong("id");
+			String firstName = jsonUser.getString("first_name");
+			String lastName = jsonUser.getString("last_name");
+			String vkLink = "vk.com/id" + id;
+			Client client = new Client(firstName, lastName);
+			SocialNetwork socialNetwork = new SocialNetwork(vkLink);
+			List<SocialNetwork> socialNetworks = new ArrayList<>();
+			socialNetworks.add(socialNetwork);
+			client.setSocialNetworks(socialNetworks);
+			return Optional.of(client);
+		} catch (JSONException e) {
+			logger.error("Can not read message from JSON or YoutubeClient don't exist in VK group",e);
+		} catch (IOException e) {
+			logger.error("Failed to connect to VK server ", e);
+		}
+		return Optional.empty();
+	}
+
 	public Client parseClientFromMessage(String message) throws ParseClientException {
 		if (!message.startsWith("Новая заявка")) {
 			throw new ParseClientException("Invalid message format");

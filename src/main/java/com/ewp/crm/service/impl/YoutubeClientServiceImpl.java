@@ -6,6 +6,8 @@ import com.ewp.crm.service.interfaces.YoutubeClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class YoutubeClientServiceImpl implements YoutubeClientService {
 
@@ -19,5 +21,10 @@ public class YoutubeClientServiceImpl implements YoutubeClientService {
     @Override
     public void add(YoutubeClient youtubeClient) {
         youtubeClientDAO.saveAndFlush(youtubeClient);
+    }
+
+    @Override
+    public List<YoutubeClient> findAll() {
+        return youtubeClientDAO.findAll();
     }
 }

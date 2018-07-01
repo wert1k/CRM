@@ -1,6 +1,10 @@
 package com.ewp.crm.service.youtube.live;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
@@ -11,14 +15,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Component
-public class SearchBroadcasts {
 
-    public String getVideoIdByChannelId(String channelId, YouTube youtube) throws IOException {
+@Component
+public class SearchLive {
+
+    public String getVideoIdByChannelId(String apiKey, String channelId) {
 
         String videoId = null;
 
         try {
+            // This object is used to make YouTube Data API requests. The last
+            // argument is required, but since we don't need anything
+            // initialized when the HttpRequest is initialized, we override
+            // the interface and provide a no-op function.
+            YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
+                public void initialize(HttpRequest request) throws IOException {
+                }
+            }).setApplicationName("youtube-cmdline-search-sample").build();
+
             HashMap<String, String> parameters = new HashMap<>();
             parameters.put("part", "snippet");
             parameters.put("eventType", "live");
@@ -26,22 +40,25 @@ public class SearchBroadcasts {
             parameters.put("channelId", channelId);
             parameters.put("type", "video");
 
-            YouTube.Search.List searchListLiveEventsRequest = youtube.search().list(parameters.get("part").toString());
+            YouTube.Search.List searchListLiveEventsRequest = youtube.search().list(parameters.get("part"));
+            searchListLiveEventsRequest.setKey(apiKey);
             if (parameters.containsKey("eventType") && parameters.get("eventType") != "") {
-                searchListLiveEventsRequest.setEventType(parameters.get("eventType").toString());
+                searchListLiveEventsRequest.setEventType(parameters.get("eventType"));
             }
 
             if (parameters.containsKey("maxResults")) {
-                searchListLiveEventsRequest.setMaxResults(Long.parseLong(parameters.get("maxResults").toString()));
+                searchListLiveEventsRequest.setMaxResults(Long.parseLong(parameters.get("maxResults")));
             }
 
             if (parameters.containsKey("channelId") && parameters.get("channelId") != "") {
-                searchListLiveEventsRequest.setChannelId(parameters.get("channelId").toString());
+                searchListLiveEventsRequest.setChannelId(parameters.get("channelId"));
             }
 
             if (parameters.containsKey("type") && parameters.get("type") != "") {
-                searchListLiveEventsRequest.setType(parameters.get("type").toString());
+                searchListLiveEventsRequest.setType(parameters.get("type"));
             }
+
+
 
             SearchListResponse response = searchListLiveEventsRequest.execute();
             System.out.println(response);

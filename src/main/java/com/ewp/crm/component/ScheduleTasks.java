@@ -41,10 +41,12 @@ public class ScheduleTasks {
 
 	private final YoutubeUtil youtubeUtil;
 
+	private final YoutubeClientService youtubeClientService;
+
 	private static Logger logger = LoggerFactory.getLogger(ScheduleTasks.class);
 
 	@Autowired
-	public ScheduleTasks(VKUtil vkUtil, ClientService clientService, StatusService statusService, SocialNetworkService socialNetworkService, SocialNetworkTypeService socialNetworkTypeService, SMSUtil smsUtil, SMSInfoService smsInfoService, SendNotificationService sendNotificationService, ClientHistoryService clientHistoryService, YoutubeUtil youtubeUtil) {
+	public ScheduleTasks(VKUtil vkUtil, ClientService clientService, StatusService statusService, SocialNetworkService socialNetworkService, SocialNetworkTypeService socialNetworkTypeService, SMSUtil smsUtil, SMSInfoService smsInfoService, SendNotificationService sendNotificationService, ClientHistoryService clientHistoryService, YoutubeUtil youtubeUtil, YoutubeClientService youtubeClientService) {
 		this.vkUtil = vkUtil;
 		this.clientService = clientService;
 		this.statusService = statusService;
@@ -55,6 +57,7 @@ public class ScheduleTasks {
 		this.sendNotificationService = sendNotificationService;
 		this.clientHistoryService = clientHistoryService;
 		this.youtubeUtil = youtubeUtil;
+		this.youtubeClientService = youtubeClientService;
 	}
 
 	private void addClient(Client newClient) {
@@ -147,11 +150,24 @@ public class ScheduleTasks {
 		}
 	}
 
-	@Scheduled(fixedRate = 60_000)
+	@Scheduled(fixedRate = 6_000)
 	private void checkYoutubeBroadcasts() {
 	    if(youtubeUtil.isLiveStreamNotInAction()) {
             youtubeUtil.handleYoutubeLiveChatMessages();
         }
+
+        Optional<List<YoutubeClient>> youtubeClient = Optional.of(youtubeClientService.findAll());
+	    if (youtubeClient.isPresent()) {
+	    	for (YoutubeClient client : youtubeClient.get()) {
+				Optional<Client> newClient = vkUtil.getClientFromYoutubeLiveStreamByName(client.getFullName());
+				if (newClient.isPresent()) {
+					SocialNetwork socialNetwork = newClient.get().getSocialNetworks().get(0);
+					if (!(Optional.ofNullable(socialNetworkService.getSocialNetworkByLink(socialNetwork.getLink())).isPresent())) {
+						addClient(newClient.get());
+					}
+				}
+			}
+		}
 	}
 
 	private String determineStatusOfResponse(String status) {

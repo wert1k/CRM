@@ -1,75 +1,46 @@
 package com.ewp.crm.component.util;
 
 import com.ewp.crm.component.util.interfaces.YoutubeUtil;
-import com.ewp.crm.service.youtube.Auth;
-import com.ewp.crm.service.youtube.live.ListLiveChatMessages;
-import com.ewp.crm.service.youtube.live.SearchBroadcasts;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.YouTubeScopes;
-import com.google.common.collect.Lists;
+import com.ewp.crm.configs.inteface.YoutubeConfig;
+import com.ewp.crm.service.youtube.live.ListLive;
+import com.ewp.crm.service.youtube.live.SearchLive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
-
 @Component
 public class YoutubeUtilImpl implements YoutubeUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(YoutubeUtilImpl.class);
+    private String apiKey;
 
-    private static final String PROPERTIES_FILENAME = "youtube.properties";
+    private String channelId;
+
+    private static Logger logger = LoggerFactory.getLogger(YoutubeUtilImpl.class);
 
     private boolean isLiveStreamNotInAction = true;
 
-    private final ListLiveChatMessages listLiveChatMessages;
+    private final SearchLive searchLive;
 
-    private final SearchBroadcasts searchBroadcasts;
+    private final ListLive listLive;
 
     @Autowired
-    public YoutubeUtilImpl(ListLiveChatMessages listLiveChatMessages, SearchBroadcasts searchBroadcasts) {
-        this.listLiveChatMessages = listLiveChatMessages;
-        this.searchBroadcasts = searchBroadcasts;
+    public YoutubeUtilImpl(YoutubeConfig youtubeConfig, SearchLive searchLive, ListLive listLive) {
+        apiKey = youtubeConfig.getApiKey();
+        channelId = youtubeConfig.getChannelId();
+        this.searchLive = searchLive;
+        this.listLive = listLive;
     }
 
     public void handleYoutubeLiveChatMessages() {
+        String videoId = searchLive.getVideoIdByChannelId(apiKey, channelId);
 
-        Properties properties = new Properties();
-        try {
-            InputStream in = YoutubeUtilImpl.class.getResourceAsStream("/" + PROPERTIES_FILENAME);
-            properties.load(in);
-        } catch (IOException e) {
-            logger.error("There was an error reading " + PROPERTIES_FILENAME + ": " + e.getCause()
-                    + " : " + e.getMessage());
-            System.exit(1);
+        if (videoId != null) {
+            isLiveStreamNotInAction = false;
         }
 
-        List<String> scopes = Lists.newArrayList(YouTubeScopes.all());
+        listLive.getNamesAndMessagesFromYoutubeLiveStreamByVideoId(apiKey, videoId);
 
-        try {
-            // Authorize the request.
-            Credential credential = Auth.authorize(scopes, "listlivechatmessages");
-
-            // This object is used to make YouTube Data API requests.
-            YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT, Auth.JSON_FACTORY, credential)
-                    .setApplicationName("youtube-cmdline-listchatmessages-sample").build();
-
-            String channelId = properties.getProperty("youtube.channel.id");
-            String videoId = searchBroadcasts.getVideoIdByChannelId(channelId, youtube);
-
-            if (videoId != null) {
-                isLiveStreamNotInAction = false;
-            }
-
-            listLiveChatMessages.start(videoId);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public boolean isLiveStreamNotInAction() {
