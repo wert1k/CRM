@@ -84,24 +84,21 @@ public class ScheduleTasks {
 	@Scheduled(fixedRate = 6_000)
 	private void checkTimeSkypeCall() {
 		for (Client client : clientService.getTimeOfSkypeCall()) {
-			client.setDateOfSkypeCall(null);
-			client.setRemindBeforeSkypeCall(null);
 			String selectNetworks = client.getSelectNetworks();
 			Long clientId = client.getId();
-			String body = null;
 
 			if(selectNetworks.contains("vk")){
-				vkUtil.schedulerSendMessageVk(clientId, 4L, body);
+				vkUtil.schedulerSendMessageVk(clientId, 4L);
 			}
 			if(selectNetworks.contains("sms")) {
 				try {
-					smsUtil.schedulerSendSMS(clientId,4L,body);
+					smsUtil.schedulerSendSMS(clientId,4L);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
 			if(selectNetworks.contains("email")){
-				mailSendService.scheduleSendEmail(clientId,4L,body);
+				mailSendService.scheduleSendEmail(clientId,4L);
 			}
 			client.setDateOfSkypeCall(null);
 			client.setRemindBeforeSkypeCall(null);
