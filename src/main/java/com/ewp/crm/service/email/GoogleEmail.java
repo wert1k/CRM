@@ -88,7 +88,7 @@ public class GoogleEmail {
         mailReceiver.setJavaMailProperties(javaMailProperties());
         mailReceiver.setShouldDeleteMessages(false);
 
-        mailReceiver.setShouldMarkMessagesAsRead(true);
+        mailReceiver.setShouldMarkMessagesAsRead(false);
         mailReceiver.setCancelIdleInterval(1200);
         mailReceiver.setBeanFactory(beanFactory);
         mailReceiver.setSearchTermStrategy(this::fromAndNotSeenTerm);
