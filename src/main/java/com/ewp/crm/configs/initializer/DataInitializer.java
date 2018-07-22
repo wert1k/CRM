@@ -78,6 +78,17 @@ public class DataInitializer {
 				"user", null, Client.Sex.MALE.toString(), "Tver", "Russia", Collections.singletonList(roleService.getByRoleName("USER")), true);
 		userService.add(user2);
 
+		String templateText4 = "<!DOCTYPE html>\n" +
+				"<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:th=\"http://www.thymeleaf.org\">\n" +
+				"<head></head>\n" +
+				"<body>\n" +
+				"<p>Добрый день, %fullName%</p>\n" +
+				"<p>Напоминаем, что сегодня %dateOfSkypeCall% по МСК Вами состоится беседа по Skype.</p>\n" +
+				"<p>С наилучшими пожеланиями, команда JavaMentor</p>\n" +
+				"<img src=\"https://sun9-9.userapi.com/c841334/v841334855/6acfb/_syiwM0RH0I.jpg\"/>\n" +
+				"</body>\n" +
+				"</html>";
+
 		String templateText3 = "<!DOCTYPE html>\n" +
 				"<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:th=\"http://www.thymeleaf.org\">\n" +
 				"<head></head>\n" +
@@ -107,24 +118,28 @@ public class DataInitializer {
 				"</body>\n" +
 				"</html>";
 
+		String otherText4 = "Добрый день, %fullName%!\n Напоминаем, что сегодня %dateOfSkypeCall% по МСК с Вами состоится беседа по Skype.\n"
+				+ "С наилучшими пожеланиями, команда JavaMentor";
 		String otherText3 = "Добрый день, %fullName%!\n Mы не смогли до Вас дозвониться.\n" +
 				"Пожалуйста, свяжитесь с нами.\n" + "С наилучшими пожеланиями, команда JavaMentor";
 		String otherText2 = "Добрый день, %fullName%!\nНапоминаем, что вам необходимо оплатить обучение за следующий месяц.\n" +
 				"С наилучшими пожеланиями, команда JavaMentor";
 		String otherText1 = "%bodyText%";
 
+		MessageTemplate MessageTemplate4 = new MessageTemplate("Беседа по Skype", templateText4, otherText4);
 		MessageTemplate MessageTemplate3 = new MessageTemplate("Не дозвонился", templateText3, otherText3);
 		MessageTemplate MessageTemplate2 = new MessageTemplate("Оплата за обучение", templateText2, otherText2);
 		MessageTemplate MessageTemplate1 = new MessageTemplate("После разговора", templateText1, otherText1);
 		MessageTemplateService.add(MessageTemplate1);
 		MessageTemplateService.add(MessageTemplate2);
 		MessageTemplateService.add(MessageTemplate3);
+		MessageTemplateService.add(MessageTemplate4);
 
 		Status status1 = new Status("First status", false, 2L);
 		Status status2 = new Status("Second status", false , 3L);
 		Status status3 = new Status("Third status", false, 4L);
 
-		Client client1 = new Client("Юрий", "Долгоруков", "79999992288", "u.dolg@mail.ru", (byte) 21, Client.Sex.MALE, "Тула", "Россия", Client.State.FINISHED, new Date(Calendar.getInstance().getTimeInMillis() - 100000000));
+		Client client1 = new Client("Юрий", "Долгоруков", "79999992288", "hibzo@mail.ru", (byte) 21, Client.Sex.MALE, "Тула", "Россия", Client.State.FINISHED, new Date(Calendar.getInstance().getTimeInMillis() - 100000000));
 		Client client2 = new Client("Вадим", "Бойко", "89687745632", "vboyko@mail.ru", (byte) 33, Client.Sex.MALE, "Тула", "Россия", Client.State.LEARNING, new Date(Calendar.getInstance().getTimeInMillis() - 200000000));
 		Client client3 = new Client("Александра", "Соловьева", "89677345632", "a.solo@mail.ru", (byte) 53, Client.Sex.FEMALE, "Тула", "Россия", Client.State.LEARNING, new Date(Calendar.getInstance().getTimeInMillis() - 300000000));
 		Client client4 = new Client("Иван", "Федоров", "89637745632", "i.fiod@mail.ru", (byte) 20, Client.Sex.MALE, "Тула", "Россия", Client.State.NEW, new Date(Calendar.getInstance().getTimeInMillis() - 400000000));
@@ -136,7 +151,7 @@ public class DataInitializer {
 		client2.addHistory(clientHistoryService.createHistory("инициализации crm"));
 		client3.addHistory(clientHistoryService.createHistory("инициализации crm"));
 		client4.addHistory(clientHistoryService.createHistory("инициализации crm"));
-		client1.setSocialNetworks(Arrays.asList(new SocialNetwork("https://vk.com/id", socialNetworkTypeService.getByTypeName("vk")),
+		client1.setSocialNetworks(Arrays.asList(new SocialNetwork("https://vk.com/id487071337", socialNetworkTypeService.getByTypeName("vk")),
 				new SocialNetwork("https://fb", socialNetworkTypeService.getByTypeName("facebook"))));
 		client2.setSocialNetworks(Arrays.asList(new SocialNetwork("https://vk.com/id", socialNetworkTypeService.getByTypeName("vk")),
 				new SocialNetwork("https://fb", socialNetworkTypeService.getByTypeName("facebook"))));
@@ -160,7 +175,7 @@ public class DataInitializer {
 		clientService.addClient(client2);
 		clientService.addClient(client3);
 		clientService.addClient(client4);
-		status0.addClient(clientService.getClientByEmail("u.dolg@mail.ru"));
+		status0.addClient(clientService.getClientByEmail("hibzo@mail.ru"));
 		status1.addClient(clientService.getClientByEmail("i.fiod@mail.ru"));
 		status2.addClient(clientService.getClientByEmail("vboyko@mail.ru"));
 		status3.addClient(clientService.getClientByEmail("a.solo@mail.ru"));
