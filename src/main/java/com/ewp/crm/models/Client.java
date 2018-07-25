@@ -14,10 +14,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "client")
@@ -55,6 +52,8 @@ public class Client implements Serializable {
 	private String country;
 
 	private String comment;
+
+	private int testResult;
 
 	@Column(name = "postponeDate")
 	private Date postponeDate;
@@ -355,6 +354,14 @@ public class Client implements Serializable {
 
 	public void setSocialNetworks(List<SocialNetwork> socialNetworks) {
 		this.socialNetworks = socialNetworks;
+	}
+
+	public int getTestResult() {
+		return testResult;
+	}
+
+	public void setTestResult(int testResult) {
+		this.testResult = testResult;
 	}
 
 	@Override

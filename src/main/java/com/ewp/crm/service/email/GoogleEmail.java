@@ -116,6 +116,9 @@ public class GoogleEmail {
                     client.setStatus(statusService.get(1L));
                     client.addHistory(clientHistoryService.createHistory("GMail"));
                     clientService.addClient(client);
+                    if(client.getClientDescriptionComment().equals("Проходил тест")){
+//                       Todo отправка результат на почту
+                    }
                 }
             } catch (Exception e) {
                 logger.error("MimeMessageParser can't parse income data ", e);

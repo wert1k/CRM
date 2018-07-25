@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class IncomeStringToClient {
@@ -20,6 +18,8 @@ public class IncomeStringToClient {
 
     private static final Logger logger = LoggerFactory.getLogger(IncomeStringToClient.class);
 
+    private final String[] testAnswers = new String[]{"2", "1", "3", "2", "3", "4"};
+
     @Autowired
     public IncomeStringToClient(SocialNetworkTypeService socialNetworkTypeService) {
         this.socialNetworkTypeService = socialNetworkTypeService;
@@ -27,6 +27,7 @@ public class IncomeStringToClient {
 
     public Client convert(String income) {
         Client client = null;
+//        income = "<br>Страница: <b>http://www.java-mentor.com/index.html</b> <br />Форма: <b>Java Test</b> <br />1: <b>2</b> <br />2: <b>1</b> <br />3: <b>4</b> <br />4: <b>4</b> <br />5: <b>4</b> <br />6: <b>4</b> <br />Имя: <b>testew343</b> <br />Phone 6: <b>8911545422259</b> <br />City 6: <b>Россия</b> <br />Email 2: <b>mcdn3434343@gmail.com</b> <br />";
         if (income != null && !income.isEmpty()) {
             String workString = prepareForm(income);
             if (income.contains("Начать обучение")) {
@@ -93,7 +94,8 @@ public class IncomeStringToClient {
     private Client parseClientFormFour(String form) {
         Client client = new Client();
         String replaceSpaceInString = form.replaceAll(" ", "");
-        String removeExtraCharacters = replaceSpaceInString.substring(replaceSpaceInString.indexOf("Имя"), replaceSpaceInString.length());
+        String parseStart = "JavaTest<br/>";
+        String removeExtraCharacters = replaceSpaceInString.substring(replaceSpaceInString.indexOf(parseStart) + parseStart.length(), replaceSpaceInString.length());
         String[] createArrayFromString = removeExtraCharacters.split("<br/>");
         Map<String, String> clientData = createMapFromClientData(createArrayFromString);
         setClientName(client, clientData.get("Имя"));
@@ -104,6 +106,7 @@ public class IncomeStringToClient {
         client.setCountry(clientData.get("City6"));
         client.setEmail(clientData.get("Email2"));
         client.setClientDescriptionComment("Проходил Тест");
+        client.setTestResult(getTestResult(clientData));
         return client;
     }
 
@@ -139,5 +142,20 @@ public class IncomeStringToClient {
         } else {
             client.setName(fullName);
         }
+    }
+
+    private int getTestResult(Map<String,String> clientData) {
+        double rightAnswers = 0;
+
+        Integer i = 1;
+        for (String answer : testAnswers) {
+            String clientAnswer = clientData.get(i.toString());
+            if (clientAnswer != null && clientAnswer.equals(answer)){
+                rightAnswers++;
+            }
+            i++;
+        }
+
+        return (int)Math.ceil(rightAnswers * 100 / testAnswers.length);
     }
 }
