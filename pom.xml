@@ -142,6 +142,20 @@
 			<artifactId>google-api-services-youtube</artifactId>
 			<version>${project.youtube.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.javers</groupId>
+			<artifactId>javers-core</artifactId>
+			<version>3.10.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.javers</groupId>
+			<artifactId>javers-spring-boot-starter-sql</artifactId>
+			<version>3.9.3</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
