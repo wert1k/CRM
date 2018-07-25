@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class IncomeStringToClient {
@@ -27,7 +29,6 @@ public class IncomeStringToClient {
 
     public Client convert(String income) {
         Client client = null;
-//        income = "<br>Страница: <b>http://www.java-mentor.com/index.html</b> <br />Форма: <b>Java Test</b> <br />1: <b>2</b> <br />2: <b>1</b> <br />3: <b>4</b> <br />4: <b>4</b> <br />5: <b>4</b> <br />6: <b>4</b> <br />Имя: <b>testew343</b> <br />Phone 6: <b>8911545422259</b> <br />City 6: <b>Россия</b> <br />Email 2: <b>mcdn3434343@gmail.com</b> <br />";
         if (income != null && !income.isEmpty()) {
             String workString = prepareForm(income);
             if (income.contains("Начать обучение")) {
