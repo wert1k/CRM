@@ -16,14 +16,14 @@ import java.util.Map;
 @Component
 public class IncomeStringToClient {
 
-    private final SocialNetworkTypeService socialNetworkTypeService;
+//    private final SocialNetworkTypeService socialNetworkTypeService;
 
     private static final Logger logger = LoggerFactory.getLogger(IncomeStringToClient.class);
 
-    @Autowired
-    public IncomeStringToClient(SocialNetworkTypeService socialNetworkTypeService) {
-        this.socialNetworkTypeService = socialNetworkTypeService;
-    }
+//    @Autowired
+//    public IncomeStringToClient(SocialNetworkTypeService socialNetworkTypeService) {
+//        this.socialNetworkTypeService = socialNetworkTypeService;
+//    }
 
     public Client convert(String income) {
         Client client = null;
@@ -62,7 +62,7 @@ public class IncomeStringToClient {
         client.setCountry(clientData.get("Страна"));
         client.setCity(clientData.get("Город"));
         if (clientData.containsKey("Соцсеть")) {
-            client.setSocialNetworks(Collections.singletonList(getSocialNetwork(clientData.get("Соцсеть"))));
+//            client.setSocialNetworks(Collections.singletonList(getSocialNetwork(clientData.get("Соцсеть"))));
         }
         if (form.contains("Согласен")) {
             client.setEmail(clientData.get("Email"));
@@ -85,7 +85,7 @@ public class IncomeStringToClient {
         client.setPhoneNumber(clientData.get("Phone"));
         client.setClientDescriptionComment(clientData.get("Vopros"));
         if (clientData.containsKey("Social")) {
-            client.setSocialNetworks(Collections.singletonList(getSocialNetwork(clientData.get("Social"))));
+//            client.setSocialNetworks(Collections.singletonList(getSocialNetwork(clientData.get("Social"))));
         }
         return client;
     }
@@ -98,7 +98,7 @@ public class IncomeStringToClient {
         Map<String, String> clientData = createMapFromClientData(createArrayFromString);
         setClientName(client, clientData.get("Имя"));
         if (clientData.containsKey("Social2")) {
-            client.setSocialNetworks(Collections.singletonList(getSocialNetwork(clientData.get("Social2"))));
+//            client.setSocialNetworks(Collections.singletonList(getSocialNetwork(clientData.get("Social2"))));
         }
         client.setPhoneNumber(clientData.get("Phone6"));
         client.setCountry(clientData.get("City6"));
@@ -107,19 +107,19 @@ public class IncomeStringToClient {
         return client;
     }
 
-    private SocialNetwork getSocialNetwork(String link) {
-        SocialNetwork socialNetwork = new SocialNetwork();
-        if (link.contains("vk.com") || link.contains("m.vk.com")) {
-            socialNetwork.setLink(link);
-            socialNetwork.setSocialNetworkType(socialNetworkTypeService.getByTypeName("vk"));
-        } else if (link.startsWith("www.facebook.com") || link.startsWith("m.facebook.com")) {
-            socialNetwork.setLink(link);
-            socialNetwork.setSocialNetworkType(socialNetworkTypeService.getByTypeName("facebook"));
-        } else {
-            socialNetwork = null;
-        }
-        return socialNetwork;
-    }
+//    private SocialNetwork getSocialNetwork(String link) {
+//        SocialNetwork socialNetwork = new SocialNetwork();
+//        if (link.contains("vk.com") || link.contains("m.vk.com")) {
+//            socialNetwork.setLink(link);
+//            socialNetwork.setSocialNetworkType(socialNetworkTypeService.getByTypeName("vk"));
+//        } else if (link.startsWith("www.facebook.com") || link.startsWith("m.facebook.com")) {
+//            socialNetwork.setLink(link);
+//            socialNetwork.setSocialNetworkType(socialNetworkTypeService.getByTypeName("facebook"));
+//        } else {
+//            socialNetwork = null;
+//        }
+//        return socialNetwork;
+//    }
 
     private Map<String, String> createMapFromClientData(String[] res) {
         Map<String, String> clientData = new HashMap<>();

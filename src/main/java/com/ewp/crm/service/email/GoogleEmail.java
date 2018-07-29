@@ -1,5 +1,6 @@
 package com.ewp.crm.service.email;
 
+import com.ewp.crm.models.User;
 import com.ewp.crm.service.impl.VKService;
 import com.ewp.crm.configs.inteface.MailConfig;
 import com.ewp.crm.models.Client;
@@ -18,6 +19,7 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.mail.ImapIdleChannelAdapter;
 import org.springframework.integration.mail.ImapMailReceiver;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import javax.mail.Flags;
@@ -29,8 +31,7 @@ import javax.mail.search.AndTerm;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.FromTerm;
 import javax.mail.search.SearchTerm;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 @Configuration
 @EnableIntegration
@@ -50,12 +51,13 @@ public class GoogleEmail {
     private final StatusService statusService;
     private final IncomeStringToClient incomeStringToClient;
     private final ClientHistoryService clientHistoryService;
+    private final MailSendService prepareAndSend;
 
 
     private static Logger logger = LoggerFactory.getLogger(GoogleEmail.class);
 
     @Autowired
-    public GoogleEmail(MailConfig mailConfig, BeanFactory beanFactory, ClientService clientService, StatusService statusService, IncomeStringToClient incomeStringToClient, ClientHistoryService clientHistoryService, VKService vkService) {
+    public GoogleEmail(MailSendService prepareAndSend, MailConfig mailConfig, BeanFactory beanFactory, ClientService clientService, StatusService statusService, IncomeStringToClient incomeStringToClient, ClientHistoryService clientHistoryService, VKService vkService) {
         this.beanFactory = beanFactory;
         this.clientService = clientService;
         this.statusService = statusService;
@@ -70,6 +72,7 @@ public class GoogleEmail {
         debug = mailConfig.getDebug();
         imapServer = mailConfig.getImapServer();
 	    this.clientHistoryService = clientHistoryService;
+        this.prepareAndSend = prepareAndSend;
     }
 
     private Properties javaMailProperties() {
@@ -111,8 +114,20 @@ public class GoogleEmail {
             try {
                 logger.info("start parsing income email", parser.getHtmlContent());
                 parser.parse();
+
                 Client client = incomeStringToClient.convert(parser.getHtmlContent());
                 if (client != null) {
+                    //--------------------------
+                    if (parser.getHtmlContent().contains("Java Test")) {
+                        boolean list = validatorTestResult(parser.getPlainContent());
+                        if (list) {
+                            prepareAndSend.sendMail("Java-Mentor.ru", client.getEmail(), "Test complete!", "Вы прошли тест!\n\n Результаты пройденого теста: \n\n");
+                        } else {
+                            prepareAndSend.sendMail("Java-Mentor.ru", client.getEmail(), "Test complete!", "Вы не прошли тест! Java программист это не про вас)) \n\n Результаты пройденого теста: \n\n");
+                        }
+                    }
+                    //--------------------------
+
                     client.setStatus(statusService.get(1L));
                     client.addHistory(clientHistoryService.createHistory("GMail"));
                     clientService.addClient(client);
@@ -122,6 +137,17 @@ public class GoogleEmail {
             }
         });
         return directChannel;
+    }
+
+    private boolean validatorTestResult(String parseContent) {
+        String parseTest = parseContent;
+        String validResult = "2 1 3 2 3 4";
+        String list = parseTest.substring(parseTest.indexOf(" Java Test") + 1, parseTest.indexOf("6:")).replace("Java Test", "").replaceAll(": ", " ");
+
+        if (validResult.contains(list)) {
+            return true;
+        }
+        return false;
     }
 
     private SearchTerm fromAndNotSeenTerm(Flags supportedFlags, Folder folder) {
