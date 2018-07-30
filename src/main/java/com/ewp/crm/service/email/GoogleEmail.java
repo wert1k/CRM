@@ -32,6 +32,7 @@ import javax.mail.search.FlagTerm;
 import javax.mail.search.FromTerm;
 import javax.mail.search.SearchTerm;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableIntegration
@@ -119,15 +120,14 @@ public class GoogleEmail {
                 if (client != null) {
                     //--------------------------
                     if (parser.getHtmlContent().contains("Java Test")) {
-                        boolean list = validatorTestResult(parser.getPlainContent());
-                        if (list) {
-                            prepareAndSend.sendMail("Java-Mentor.ru", client.getEmail(), "Test complete!", "Вы прошли тест!\n\n Результаты пройденого теста: \n\n");
+                        Long list = validatorTestResult(parser.getPlainContent());
+                        if (list > 0) {
+                            System.out.println("Java-Mentor.ru" + client.getEmail() + "Test complete!" + "Поздравляем! Вы ответили правильно на: \n\n" + list + "% вопросов!");
                         } else {
-                            prepareAndSend.sendMail("Java-Mentor.ru", client.getEmail(), "Test complete!", "Вы не прошли тест! Java программист это не про вас)) \n\n Результаты пройденого теста: \n\n");
+                            System.out.println("Java-Mentor.ru" + client.getEmail() + "Test complete!" + "К сожалению вы не ответили ни на один вопрос верно...");
                         }
-                    }
                     //--------------------------
-
+                }
                     client.setStatus(statusService.get(1L));
                     client.addHistory(clientHistoryService.createHistory("GMail"));
                     clientService.addClient(client);
@@ -139,15 +139,44 @@ public class GoogleEmail {
         return directChannel;
     }
 
-    private boolean validatorTestResult(String parseContent) {
-        String parseTest = parseContent;
-        String validResult = "2 1 3 2 3 4";
-        String list = parseTest.substring(parseTest.indexOf(" Java Test") + 1, parseTest.indexOf("6:")).replace("Java Test", "").replaceAll(": ", " ");
 
-        if (validResult.contains(list)) {
-            return true;
+    private static Long validatorTestResult(String parseContent) {
+        String parseTest = parseContent;
+        String indexQuery = parseTest.substring(parseTest.indexOf(" Java Test") + 1, parseTest.indexOf("6:") + 5)
+                .replace("Java Test ", "")
+                .replaceAll(": \\d+ ", "");
+
+        String listQuery = parseTest.substring(parseTest.indexOf(" Java Test") + 1, parseTest.indexOf("6:") + 5)
+                .replace("Java Test", "")
+                .replaceAll(" \\d+: ", "");
+
+        List<Integer> result = Arrays.asList(3, 3, 1, 2, 3, 4);
+        List<Integer> resultList = Arrays.asList(indexQuery.split("\\s*\\s*")).stream().map(s -> Integer.parseInt(s.trim())).collect(Collectors.toList());
+        List<Integer> resultTest = Arrays.asList(listQuery.split("\\s*\\s*")).stream().map(s -> Integer.parseInt(s.trim())).collect(Collectors.toList());
+
+        System.out.println(resultList);
+        System.out.println(resultTest);
+
+        for (int q = 1, count = 0, i = 0; i < result.size(); i++) {
+            if (result.size() > i & resultTest.size() > i) {
+                if (resultList.get(i).equals(i + q)) {
+                    if (result.get(i + q - 1).equals(resultTest.get(i))) {
+                        count++;
+                        System.out.println(count);
+                        if ((resultTest.size()) - i == 1) {
+                            return (long) ((count * 100) / resultTest.size());
+                        }
+                    }
+                    if ((resultList.size()) - i == 1 & count == 0) {
+                        return 0L;
+                    }
+                }
+                if (!resultList.get(i + 1).equals(i + q + 1)) {
+                    q++;
+                }
+            }
         }
-        return false;
+        return 0L;
     }
 
     private SearchTerm fromAndNotSeenTerm(Flags supportedFlags, Folder folder) {
