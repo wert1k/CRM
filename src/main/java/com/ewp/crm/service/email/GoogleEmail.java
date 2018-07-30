@@ -122,9 +122,9 @@ public class GoogleEmail {
                     if (parser.getHtmlContent().contains("Java Test")) {
                         Long list = validatorTestResult(parser.getPlainContent());
                         if (list > 0) {
-                            System.out.println("Java-Mentor.ru" + client.getEmail() + "Test complete!" + "Поздравляем! Вы ответили правильно на: \n\n" + list + "% вопросов!");
+                            prepareAndSend.sendMail("Java-Mentor.ru", client.getEmail(), "Test complete!", "Поздравляем! Вы ответили правильно на: \n\n" + list + "% вопросов!");
                         } else {
-                            System.out.println("Java-Mentor.ru" + client.getEmail() + "Test complete!" + "К сожалению вы не ответили ни на один вопрос верно...");
+                            prepareAndSend.sendMail("Java-Mentor.ru", client.getEmail(), "Test complete!", "К сожалению вы не ответили ни на одни вопрос верно...");
                         }
                     //--------------------------
                 }
@@ -142,15 +142,15 @@ public class GoogleEmail {
 
     private static Long validatorTestResult(String parseContent) {
         String parseTest = parseContent;
-        String indexQuery = parseTest.substring(parseTest.indexOf(" Java Test") + 1, parseTest.indexOf("6:") + 5)
+        String indexQuery = parseTest.substring(parseTest.indexOf(" Java Test") + 1, parseTest.indexOf("Имя:"))
                 .replace("Java Test ", "")
                 .replaceAll(": \\d+ ", "");
 
-        String listQuery = parseTest.substring(parseTest.indexOf(" Java Test") + 1, parseTest.indexOf("6:") + 5)
+        String listQuery = parseTest.substring(parseTest.indexOf(" Java Test") + 1, parseTest.indexOf("Имя:"))
                 .replace("Java Test", "")
                 .replaceAll(" \\d+: ", "");
 
-        List<Integer> result = Arrays.asList(3, 3, 1, 2, 3, 4);
+        List<Integer> result = Arrays.asList(2, 1, 2, 2, 3, 4);
         List<Integer> resultList = Arrays.asList(indexQuery.split("\\s*\\s*")).stream().map(s -> Integer.parseInt(s.trim())).collect(Collectors.toList());
         List<Integer> resultTest = Arrays.asList(listQuery.split("\\s*\\s*")).stream().map(s -> Integer.parseInt(s.trim())).collect(Collectors.toList());
 
@@ -158,22 +158,23 @@ public class GoogleEmail {
         System.out.println(resultTest);
 
         for (int q = 1, count = 0, i = 0; i < result.size(); i++) {
-            if (result.size() > i & resultTest.size() > i) {
-                if (resultList.get(i).equals(i + q)) {
-                    if (result.get(i + q - 1).equals(resultTest.get(i))) {
-                        count++;
-                        System.out.println(count);
-                        if ((resultTest.size()) - i == 1) {
-                            return (long) ((count * 100) / resultTest.size());
-                        }
-                    }
-                    if ((resultList.size()) - i == 1 & count == 0) {
-                        return 0L;
+            if (resultList.get(i).equals(i + q)) {
+                if (result.get(i + q - 1).equals(resultTest.get(i))) {
+                    count++;
+                    if ((resultTest.size()) - i == 1) {
+                        return (long) ((count * 100) / result.size());
                     }
                 }
-                if (!resultList.get(i + 1).equals(i + q + 1)) {
-                    q++;
+                if ((resultList.size()) - i == 1 & count == 0) {
+                    return 0L;
                 }
+            }
+            if (resultList.size() <= 1) {
+                q += resultList.get(i) - 1;
+                i--;
+            } else if (!resultList.get(i + 1).equals(i + q + 1)) {
+                q++;
+                i--;
             }
         }
         return 0L;
