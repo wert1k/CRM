@@ -91,36 +91,10 @@
                             </p>
                             <p th:if="${client.ownerUser != null}" style="display:none" th:text="${client.ownerUser.fullName}"></p>
 
-                            <th:block th:each="notification_comment:${notifications_type_comment}">
-                                <th:block th:if="${notification_comment.client == client}">
-                                   <span id="notification"
-                                         class="notification glyphicon glyphicon-bell pull-right"
-                                         style="color: red"></span>
-                                </th:block>
-                            </th:block>
-
-                            <th:block th:each="notification_new_user:${notifications_type_new_user}">
-                                <th:block th:if="${notification_new_user.client == client}">
-                                   <span id="notification-new"
-                                         class="notification glyphicon glyphicon-bell pull-right"
-                                         style="color: red"></span>
-                                </th:block>
-                            </th:block>
-
-                            <th:block th:each="notification_assign_skype:${notifications_type_assign_skype}">
-                                <th:block th:if="${notification_assign_skype.client == client}">
-                                   <span id="notification-new"
-                                         class="notification glyphicon glyphicon-bell pull-right"
-                                         style="color: red"></span>
-                                </th:block>
-                            </th:block>
-
-                            <th:block th:each="notification_postpone:${notifications_type_postpone}">
-                                <th:block th:if="${notification_postpone.client == client}">
-                                   <span th:id="'notification-postpone'+${client.id}"
-                                         class="glyphicon glyphicon-time"
-                                         style="color: red"></span>
-                                </th:block>
+                            <th:block th:if="${notifications_quantity.get(client.id) != null}">
+                               <span id="notification-new"
+                                     class="notification glyphicon glyphicon-bell pull-right"
+                                     style="color: red" th:text="x+${notifications_quantity.get(client.id)}"></span>
                             </th:block>
                         </div>
                 </div>

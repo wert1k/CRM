@@ -17,6 +17,9 @@ public class DataInitializer {
 	private VkTrackedClubService vkTrackedClubService;
 
 	@Autowired
+	private SendNotificationService sendNotificationService;
+
+	@Autowired
 	private VKConfig vkConfig;
 
 	@Autowired
@@ -200,5 +203,9 @@ public class DataInitializer {
 			list.add(client);
 		}
 		clientService.addBatchClients(list);
+
+		sendNotificationService.sendNotificationType("skype", client1, admin, Notification.Type.ASSIGN_SKYPE);
+		sendNotificationService.sendNotificationType("new comment", client1, admin, Notification.Type.COMMENT);
+		sendNotificationService.sendNotificationType("new comment", client4, admin, Notification.Type.COMMENT);
 	}
 }
