@@ -3,14 +3,17 @@ package com.ewp.crm.service.impl;
 import com.ewp.crm.configs.GoogleApiConfig;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @PropertySource("file:./googleAPI.properties")
@@ -63,17 +66,26 @@ public class GoogleApiServiceImpl {
                 .execute();
     }
 
-    public void addToTable(String realName, String displayName, String email) throws IOException {
+    public void addToTable(String realName, String email) throws IOException {
+        /* добавление без форматирования ячеек */
         List<List<Object>> writeData = new ArrayList<>();
-            List<Object> dataRow = new ArrayList<>();
-            dataRow.add(realName);
-            dataRow.add(displayName);
-            dataRow.add(email);
-            writeData.add(dataRow);
+        List<Object> dataRow = new ArrayList<>();
+        Date date = new Date();
+        String endTrial = new SimpleDateFormat("dd.MM.yyyy", new Locale("ru")).format(date);
+        dataRow.add(realName);
+        dataRow.add(email);
+        dataRow.add(endTrial);
+        dataRow.add(endTrial);
+        dataRow.add("?????");
+        dataRow.add("?????");
+        dataRow.add("");
+        dataRow.add("");
+        dataRow.add(1);
+        writeData.add(dataRow);
         ValueRange vr = new ValueRange().setValues(writeData).setMajorDimension("ROWS");
         sheetsService.spreadsheets().values()
-                .append(tableId, "Лист1!A1:E1", vr)
-                .setValueInputOption("RAW")
+                .append(tableId, "Лист1!A1:I1", vr)
+                .setValueInputOption("USER_ENTERED")
                 .execute();
     }
 }

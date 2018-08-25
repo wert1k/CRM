@@ -48,9 +48,8 @@ public class SlackAPIServiceImpl {
             JSONObject user = json.getJSONObject("user");
             JSONObject profile = user.getJSONObject("profile");
             String realName = profile.getString("real_name_normalized");
-            String displayName = profile.getString("display_name_normalized");
             String email = profile.getString("email");
-            googleApiService.addToTable(realName, displayName, email);
+            googleApiService.addToTable(realName, email);
         }
     }
 }
