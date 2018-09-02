@@ -495,7 +495,6 @@ $(document).ready(function () {
 
 
 $(document).ready(fillFilterList);
-
 $(document).on('click',function () {
     var url = '/rest/user';
 
