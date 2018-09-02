@@ -197,7 +197,7 @@ public class DataInitializer {
 		Faker faker = new Faker();
 		List<Client> list = new LinkedList<>();
 		for (int i = 0; i < 20; i++) {
-			Client client = new Client(faker.name().firstName(), faker.name().lastName(), faker.phoneNumber().phoneNumber(), "teststatususer" + i + "@gmail.com", (byte) 20, Client.Sex.MALE, statusService.get("First Status"));
+			Client client = new Client(faker.name().firstName(), faker.name().lastName(), faker.phoneNumber().phoneNumber(), "teststatususer" + i + "@gmail.com", (byte) 20, Client.Sex.MALE, statusService.get("trialLearnStatus"));
 			client.addHistory(clientHistoryService.createHistory("инициализация crm"));
 			list.add(client);
 		}
