@@ -48,7 +48,7 @@ public class ScheduleTasks {
 
     private final ClientHistoryService clientHistoryService;
 
-    private FacebookService facebookService;
+    private final FacebookService facebookService;
 
     private final VkTrackedClubService vkTrackedClubService;
 
